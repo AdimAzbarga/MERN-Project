@@ -1,23 +1,38 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 import SideDrawer from "./SideDrawer";
 import NavLinks from "./NavLinks";
 import MainHeader from "./MainHeader";
+import BackDrop from "../UIElements/BackDrop";
 import "./MainNavigation.css";
 
 import AddLocationAltIcon from "@mui/icons-material/AddLocationAlt";
 
 const MainNavigation = (props) => {
+  const [DrawerIsOpen, setDrawerOpen] = useState(false);
+
+  const openDrawer = () => {
+    setDrawerOpen(true);
+  };
+
+  const closeDrawer = () => {
+    setDrawerOpen(false);
+  };
+
   return (
     <React.Fragment>
-      <SideDrawer>
-        <nav className="main-navigation__drawer-nav">
-          <NavLinks />
-        </nav>
-      </SideDrawer>
+    {DrawerIsOpen && <BackDrop onClick={closeDrawer} />}
+      {DrawerIsOpen && (
+        <SideDrawer>
+          <nav className="main-navigation__drawer-nav">
+            <NavLinks />
+          </nav>
+        </SideDrawer>
+      )}
       <MainHeader>
-        <button className="main-navigation__menu-btn">
+        <button className="main-navigation__menu-btn" onClick={openDrawer}>
           <span />
           <span />
           <span />
