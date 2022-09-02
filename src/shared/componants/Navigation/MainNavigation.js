@@ -2,37 +2,38 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
+import AddLocationAltIcon from "@mui/icons-material/AddLocationAlt";
 import SideDrawer from "./SideDrawer";
 import NavLinks from "./NavLinks";
 import MainHeader from "./MainHeader";
 import BackDrop from "../UIElements/BackDrop";
 import "./MainNavigation.css";
 
-import AddLocationAltIcon from "@mui/icons-material/AddLocationAlt";
-
 const MainNavigation = (props) => {
   const [DrawerIsOpen, setDrawerOpen] = useState(false);
 
-  const openDrawer = () => {
+  const openDrawerHandler = () => {
     setDrawerOpen(true);
   };
 
-  const closeDrawer = () => {
+  const closeDrawerHandler = () => {
     setDrawerOpen(false);
   };
 
   return (
     <React.Fragment>
-    {DrawerIsOpen && <BackDrop onClick={closeDrawer} />}
-      {DrawerIsOpen && (
-        <SideDrawer>
-          <nav className="main-navigation__drawer-nav">
-            <NavLinks />
-          </nav>
-        </SideDrawer>
-      )}
+      {DrawerIsOpen && <BackDrop onClick={closeDrawerHandler} />}
+      <SideDrawer show={DrawerIsOpen}>
+        <nav className="main-navigation__drawer-nav" onClick={closeDrawerHandler}>
+          <NavLinks />
+        </nav>
+      </SideDrawer>
+
       <MainHeader>
-        <button className="main-navigation__menu-btn" onClick={openDrawer}>
+        <button
+          className="main-navigation__menu-btn"
+          onClick={openDrawerHandler}
+        >
           <span />
           <span />
           <span />
