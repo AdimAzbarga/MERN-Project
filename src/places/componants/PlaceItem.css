@@ -33,6 +33,7 @@
     padding: 1rem;
     text-align: center;
     border-top: 1px solid #ccc;
+    
   }
   
   .place-item__modal-content {
@@ -41,6 +42,8 @@
   
   .place-item__modal-actions {
     text-align: right;
+    margin: 20px;
+   
   }
   
   .place-item__actions button,
@@ -48,6 +51,11 @@
     margin: 0.5rem;
   }
   
+.map-container{
+  height: 18rem;
+  width: 100%;
+}
+
   @media (min-width: 768px) {
     .place-item__image {
       height: 20rem;
