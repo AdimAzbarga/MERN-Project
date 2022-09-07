@@ -6,6 +6,7 @@ import Button from "../../shared/componants/FormElements/Button";
 import Card from "../../shared/componants/UIElements/Card";
 import "./PlaceItem.css";
 
+//show map
 const PlaceItem = (props) => {
   const [showMap, setShowMap] = useState(false);
 
@@ -14,6 +15,21 @@ const PlaceItem = (props) => {
   };
   const hideMapHandler = () => {
     setShowMap(false);
+  };
+
+  //show delete werning modal
+  const [showConfirmModal, setConfirmModal] = useState(false);
+
+  const showDeletwWrningHandler = () => {
+    setConfirmModal(true);
+  };
+  const hideDeletwWrningHandler = () => {
+    setConfirmModal(false);
+  };
+
+  const confirmDeleteHandel = () => {
+    setConfirmModal(false);
+    console.log("DELETING...");
   };
 
   return (
@@ -27,8 +43,30 @@ const PlaceItem = (props) => {
         footer={<Button onClick={hideMapHandler}>CLOSE</Button>}
       >
         <div className="map-container">
-        <Map center={props.coordinates} zoom={16} />
+          <Map center={props.coordinates} zoom={16} />
         </div>
+      </Modal>
+      <Modal
+        show={showConfirmModal}
+        onCancel={hideDeletwWrningHandler}
+        header="ARE YOU SURE?"
+        contentClass="place-item__modal-content"
+        footerClass="place-item__modal-actions"
+        footer={
+          <React.Fragment>
+            <Button inverse onClick={hideDeletwWrningHandler}>
+              Cancel
+            </Button>
+            <Button danger onClick={confirmDeleteHandel}>
+              Delete
+            </Button>
+          </React.Fragment>
+        }
+      >
+        <p>
+          Do you want to delete this place ? Please notr that it can't be undone
+          thereafter.
+        </p>
       </Modal>
       <li className="place-item">
         <Card className="place-item__content">
@@ -45,7 +83,9 @@ const PlaceItem = (props) => {
               View On Map
             </Button>
             <Button to={`/places/${props.id}`}>Edit</Button>
-            <Button danger>Delete</Button>
+            <Button danger onClick={showDeletwWrningHandler}>
+              Delete
+            </Button>
           </div>
         </Card>
       </li>

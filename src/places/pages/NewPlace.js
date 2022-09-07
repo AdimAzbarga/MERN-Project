@@ -1,41 +1,17 @@
-import React, { useCallback, useReducer } from "react";
+import React from "react";
 
 import {
   VALIDATOR_MINLENGTH,
   VALIDATOR_REQUIRE,
 } from "../../shared/util/validators";
+import { useForm } from "../../shared/hooks/form-hook";
 import Button from "../../shared/componants/FormElements/Button";
 import Input from "../../shared/componants/FormElements/Input";
-import "./NewPlace.css";
-
-const changeReduser = (state, action) => {
-  switch (action.type) {
-    case "INPUT_CHANGE":
-      let formIsValid = true;
-      for (const inputId in state.inputs) {
-        if (inputId === action.inputId) {
-          formIsValid = formIsValid && action.isValid;
-        } else {
-          formIsValid = formIsValid && state.inputs[inputId].isValid;
-        }
-      }
-      return {
-        ...state,
-        inputs: {
-          ...state.inputs,
-          [action.inputId]: { value: action.value, isValid: action.isValid },
-        },
-        isValid: formIsValid,
-      };
-
-    default:
-      return state;
-  }
-};
+import "./Pform.css";
 
 const NewPlace = () => {
-  const [formState, dispatch] = useReducer(changeReduser, {
-    inputs: {
+  const [formState, InputHandler] = useForm(
+    {
       title: {
         value: "",
         isValid: false,
@@ -45,16 +21,8 @@ const NewPlace = () => {
         isValid: false,
       },
     },
-    isValid: false,
-  });
-  const InputHandler = useCallback((id, value, isValid) => {
-    dispatch({
-      type: "INPUT_CHANGE",
-      value: value,
-      isValid: isValid,
-      inputId: id,
-    });
-  }, []);
+    false
+  );
 
   const placeSubminHandler = (event) => {
     event.preventDefault();
@@ -70,7 +38,7 @@ const NewPlace = () => {
         label="Title"
         type="text"
         validators={[VALIDATOR_REQUIRE()]}
-        errorText="Please ENTER a valid title,"
+        errorText="Please ENTER a valid title."
       />
 
       <Input
