@@ -1,5 +1,5 @@
 import React from "react";
-import UserList from "../pages/UserList";
+import UserList from "../componants/UserList";
 
 const Users = () => {
   const USERS = [
