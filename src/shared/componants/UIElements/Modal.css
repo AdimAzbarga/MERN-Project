@@ -4,6 +4,7 @@
     top: 22vh;
     left: 10%;
     width: 100%;
+    height:20%;
     background: white;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
     border-radius: 8px;
@@ -25,7 +26,7 @@
   }
   
   .modal__footer {
-    padding: 1rem 0.5rem;
+    padding: 0 0 2.7rem 1rem;
   }
   
   @media (min-width: 768px) {

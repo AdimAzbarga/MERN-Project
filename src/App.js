@@ -7,7 +7,7 @@ import {
   Switch,
 } from "react-router-dom";
 
-import Login from "./user/pages/Authenticate";
+import Authenticate from "./user/pages/Authenticate";
 import UpdatePlace from "./places/pages/UpdatePlace.js";
 import UserPlaces from "./places/pages/UserPlaces.js";
 import Users from "./user/pages/Users.jsx";
@@ -56,10 +56,10 @@ const App = () => {
         <Route path="/:userId/places" exact>
           <UserPlaces />
         </Route>
-        <Route path="/login" exact>
-          <Login />
-        </Route>
-        <Redirect to="/login" />
+        <Route path="/auth" exact>
+          <Authenticate />
+        </Route> 
+        <Redirect to="/auth" />
       </Switch>
     );
   }

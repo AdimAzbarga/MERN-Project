@@ -3,6 +3,8 @@ import React, { useContext, useState } from "react";
 import Card from "../../shared/componants/UIElements/Card";
 import Input from "../../shared/componants/FormElements/Input";
 import Button from "../../shared/componants/FormElements/Button";
+import LoadingSpinner from "../../shared/componants/UIElements/LoadingSpinner";
+import ErrorModal from "../../shared/componants/UIElements/ErrorModal";
 import {
   VALIDATOR_EMAIL,
   VALIDATOR_MINLENGTH,
@@ -12,9 +14,11 @@ import { useForm } from "../../shared/hooks/form-hook";
 import { LoginContext } from "../../shared/context/LoginContext";
 import "./Authenticate.css";
 
-const Login = () => {
+const Authenticate = () => {
   const auth = useContext(LoginContext);
   const [isLoginMode, setIsLoginMode] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState();
   const [formState, inputHandler, setFormData] = useForm(
     {
       email: {
@@ -28,13 +32,6 @@ const Login = () => {
     },
     false
   );
-
-  const authSubmitHandler = (event) => {
-    event.preventDefault();
-    console.log(formState.inputs);
-    auth.Login();
-  };
-
   const switchLoginMode = () => {
     if (!isLoginMode) {
       setFormData(
@@ -58,10 +55,76 @@ const Login = () => {
     setIsLoginMode((prevMode) => !prevMode);
   };
 
+  const authSubmitHandler = async (event) => {
+    event.preventDefault();
+
+    if (isLoginMode) {
+      try {
+        setIsLoading(true);
+        const response = await fetch("http://localhost:5000/api/users/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formState.inputs.email.value,
+            password: formState.inputs.password.value,
+          }),
+        });
+
+        const responseData = await response.json();
+        if (!response.ok) {
+          throw new Error(responseData.message);
+        }
+        setIsLoading(false);
+        auth.Login();
+      } catch (err) {
+        console.log(err);
+        setIsLoading(false);
+        setIsError(err.message);
+      }
+    } else {
+      try {
+        setIsLoading(true);
+        const response = await fetch("http://localhost:5000/api/users/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formState.inputs.name.value,
+            email: formState.inputs.email.value,
+            password: formState.inputs.password.value,
+          }),
+        });
+
+        const responseData = await response.json();
+        if (!response.ok) {
+          throw new Error(responseData.message);
+        }
+        setIsLoading(false);
+        auth.Login();
+      } catch (err) {
+        console.log(err);
+        setIsLoading(false);
+        setIsError(err.message);
+      }
+    }
+  };
+
+  const errorHandler =()=>{
+    setIsError(null);
+  }
+
   return (
+    <React.Fragment>
+
+   <ErrorModal error ={isError} onClear={errorHandler}/>
     <Card className="authentication">
-      <h2>Login Required</h2>
+      {isLoading && <LoadingSpinner asOverlay />}
+      <h2>{isLoginMode ? "Login Required" : "Register Required"}</h2>
       <hr />
+
       <form onSubmit={authSubmitHandler}>
         {!isLoginMode && (
           <Input
@@ -96,13 +159,14 @@ const Login = () => {
         <Button type="submit" disabled={!formState.isValid}>
           {isLoginMode ? "Login" : "Signup"}
         </Button>
-        <p>Don't have an account?</p>
-        <Button type="submit" inverse onClick={switchLoginMode}>
-          {isLoginMode ? "REGISTER" : "LOGIN"}
-        </Button>
       </form>
+      <p>Don't have an account?</p>
+      <Button type="submit" inverse onClick={switchLoginMode}>
+        {isLoginMode ? "REGISTER" : "LOGIN"}
+      </Button>
     </Card>
+    </React.Fragment>
   );
 };
 
-export default Login;
+export default Authenticate;
