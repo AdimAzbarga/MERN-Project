@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 
 import Authenticate from "./user/pages/Authenticate";
-import UpdatePlace from "./places/pages/UpdatePlace.js";
+import UpdatePlace from "./places/pages/UpdatePlace";
 import UserPlaces from "./places/pages/UserPlaces.js";
 import Users from "./user/pages/Users.jsx";
 import NewPlace from "./places/pages/NewPlace";
@@ -18,13 +18,16 @@ import { LoginContext } from "./shared/context/LoginContext";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userId, setUserId] = useState(false);
 
-  const login = useCallback(() => {
+  const login = useCallback((uid) => {
     setIsLoggedIn(true);
+    setUserId(uid);
   }, []);
 
   const logout = useCallback(() => {
     setIsLoggedIn(false);
+    setUserId(null);
   }, []);
 
   let routes;
@@ -58,7 +61,7 @@ const App = () => {
         </Route>
         <Route path="/auth" exact>
           <Authenticate />
-        </Route> 
+        </Route>
         <Redirect to="/auth" />
       </Switch>
     );
@@ -66,7 +69,12 @@ const App = () => {
 
   return (
     <LoginContext.Provider
-      value={{ isLoggedin: isLoggedIn, Login: login, Logout: logout }}
+      value={{
+        isLoggedin: isLoggedIn,
+        userId: userId,
+        Login: login,
+        Logout: logout,
+      }}
     >
       <Router>
         <MainNavegation />

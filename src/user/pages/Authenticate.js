@@ -5,6 +5,7 @@ import Input from "../../shared/componants/FormElements/Input";
 import Button from "../../shared/componants/FormElements/Button";
 import LoadingSpinner from "../../shared/componants/UIElements/LoadingSpinner";
 import ErrorModal from "../../shared/componants/UIElements/ErrorModal";
+import { useHttpClient } from "../../shared/hooks/http-hook";
 import {
   VALIDATOR_EMAIL,
   VALIDATOR_MINLENGTH,
@@ -17,8 +18,7 @@ import "./Authenticate.css";
 const Authenticate = () => {
   const auth = useContext(LoginContext);
   const [isLoginMode, setIsLoginMode] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState();
+  const { isLoading, isError, sendRequest, deleteError } = useHttpClient();
   const [formState, inputHandler, setFormData] = useForm(
     {
       email: {
@@ -60,111 +60,87 @@ const Authenticate = () => {
 
     if (isLoginMode) {
       try {
-        setIsLoading(true);
-        const response = await fetch("http://localhost:5000/api/users/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+        const responseData = await sendRequest(
+          "http://localhost:5000/api/users/login",
+          "POST",
+          JSON.stringify({
             email: formState.inputs.email.value,
             password: formState.inputs.password.value,
           }),
-        });
-
-        const responseData = await response.json();
-        if (!response.ok) {
-          throw new Error(responseData.message);
-        }
-        setIsLoading(false);
-        auth.Login();
-      } catch (err) {
-        console.log(err);
-        setIsLoading(false);
-        setIsError(err.message);
-      }
+          {
+            "Content-Type": "application/json",
+          }
+        );
+        auth.Login(responseData.user.id);
+      } catch (err) {}
     } else {
       try {
-        setIsLoading(true);
-        const response = await fetch("http://localhost:5000/api/users/signup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+        const responseData = await sendRequest(
+          "http://localhost:5000/api/users/signup",
+          "POST",
+          JSON.stringify({
             name: formState.inputs.name.value,
             email: formState.inputs.email.value,
             password: formState.inputs.password.value,
           }),
-        });
+          {
+            "Content-Type": "application/json",
+          }
+        );
 
-        const responseData = await response.json();
-        if (!response.ok) {
-          throw new Error(responseData.message);
-        }
-        setIsLoading(false);
-        auth.Login();
-      } catch (err) {
-        console.log(err);
-        setIsLoading(false);
-        setIsError(err.message);
-      }
+        auth.Login(responseData.user.id);
+      } catch (err) {}
     }
   };
 
-  const errorHandler =()=>{
-    setIsError(null);
-  }
-
   return (
     <React.Fragment>
+      <ErrorModal error={isError} onClear={deleteError} />
+      <Card className="authentication">
+        {isLoading && <LoadingSpinner asOverlay />}
+        <h2>{isLoginMode ? "Login Required" : "Register Required"}</h2>
+        <hr />
 
-   <ErrorModal error ={isError} onClear={errorHandler}/>
-    <Card className="authentication">
-      {isLoading && <LoadingSpinner asOverlay />}
-      <h2>{isLoginMode ? "Login Required" : "Register Required"}</h2>
-      <hr />
+        <form onSubmit={authSubmitHandler}>
+          {!isLoginMode && (
+            <Input
+              element="input"
+              id="name"
+              type="text"
+              label="User Name"
+              validators={[VALIDATOR_REQUIRE()]}
+              errorText="Please enter a UserName."
+              onInput={inputHandler}
+            />
+          )}
 
-      <form onSubmit={authSubmitHandler}>
-        {!isLoginMode && (
           <Input
             element="input"
-            id="name"
-            type="text"
-            label="User Name"
-            validators={[VALIDATOR_REQUIRE()]}
-            errorText="Please enter a UserName."
+            id="email"
+            type="email"
+            label="E-Mail"
+            validators={[VALIDATOR_EMAIL()]}
+            errorText="Please enter a valid email address."
             onInput={inputHandler}
           />
-        )}
-
-        <Input
-          element="input"
-          id="email"
-          type="email"
-          label="E-Mail"
-          validators={[VALIDATOR_EMAIL()]}
-          errorText="Please enter a valid email address."
-          onInput={inputHandler}
-        />
-        <Input
-          element="input"
-          id="password"
-          type="password"
-          label="Password"
-          validators={[VALIDATOR_MINLENGTH(5)]}
-          errorText="Please enter a valid password, at least 5 characters."
-          onInput={inputHandler}
-        />
-        <Button type="submit" disabled={!formState.isValid}>
-          {isLoginMode ? "Login" : "Signup"}
+          <Input
+            element="input"
+            id="password"
+            type="password"
+            label="Password"
+            validators={[VALIDATOR_MINLENGTH(6)]}
+            errorText="Please enter a valid password, at least 5 characters."
+            onInput={inputHandler}
+          />
+          <Button type="submit" disabled={!formState.isValid}>
+            {isLoginMode ? "Login" : "Signup"}
+          </Button>
+        </form>
+        <p>Don't have an account?</p>
+        <Button type="submit" inverse onClick={switchLoginMode}>
+          {isLoginMode ? "REGISTER" : "LOGIN"}
         </Button>
-      </form>
-      <p>Don't have an account?</p>
-      <Button type="submit" inverse onClick={switchLoginMode}>
-        {isLoginMode ? "REGISTER" : "LOGIN"}
-      </Button>
-    </Card>
+      </Card>
     </React.Fragment>
   );
 };

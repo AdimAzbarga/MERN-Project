@@ -1,17 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import UserList from "../componants/UserList";
-
+import LoadingSpinner from "../../shared/componants/UIElements/LoadingSpinner";
+import ErrorModal from "../../shared/componants/UIElements/ErrorModal";
+import { useHttpClient } from "../../shared/hooks/http-hook";
 const Users = () => {
-  const USERS = [
-    {
-      id: "u1",
-      name: "Moana",
-      image:
-        "https://cdn.vox-cdn.com/thumbor/hg2HVKjv7THSbdHc71PoNJJNnnY=/0x0:1920x800/920x613/filters:focal(506x118:812x424):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/52005641/MoanaPortrait.0.jpeg",
-      place: "3",
-    },
-  ];
-  return <UserList items={USERS} />;
+  const { isLoading, isError, sendRequest, deleteError } = useHttpClient();
+  const [loadedUsers, setLoadedUsers] = useState();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const responseData = await sendRequest(
+          "http://localhost:5000/api/users"
+        );
+
+        setLoadedUsers(responseData.users);
+      } catch (err) {}
+    };
+    fetchUsers();
+  }, [sendRequest]);
+
+  return (
+    <React.Fragment>
+      <ErrorModal error={isError} onClear={deleteError} />
+      {isLoading && (
+        <div className="center">
+          <LoadingSpinner />
+        </div>
+      )}
+      {!isLoading && loadedUsers && <UserList items={loadedUsers} />}
+    </React.Fragment>
+  );
 };
 
 export default Users;

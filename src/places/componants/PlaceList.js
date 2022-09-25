@@ -9,9 +9,9 @@ const PlaceList = (props) => {
   if (props.items.length === 0) {
     return (
       <div className="place-list center">
-        <Card >
+        <Card>
           <h2>No places found. Maybe create one?</h2>
-          <Button to ="/places/new">Share Place</Button>
+          <Button to="/places/new">Share Place</Button>
         </Card>
       </div>
     );
@@ -19,18 +19,21 @@ const PlaceList = (props) => {
 
   return (
     <ul className="place-list">
-      {props.items.map((place) => (
-        <PlaceItem
-          key={place.id}
-          id={place.id}
-          image={place.image}
-          title={place.title}
-          description={place.description}
-          address={place.address}
-          creatorId={place.creatorId}
-          coordinates={place.location}
-        />
-      ))}
+      {props.items.map((place) => {
+        return (
+          <PlaceItem
+            key={place.id}
+            id={place._id}
+            image={place.image}
+            title={place.title}
+            description={place.description}
+            address={place.address}
+            creatorId={place.creatorId}
+            coordinates={place.location}
+            onDelete={props.onDelete}
+          />
+        );
+      })}
     </ul>
   );
 };

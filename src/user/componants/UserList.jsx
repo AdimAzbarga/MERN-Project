@@ -20,7 +20,7 @@ const UserList = (props) => {
             key={user.id}
             id={user.id}
             name={user.name}
-            place={user.place}
+            place={user.places.length}
             image={user.image}
           />
         );

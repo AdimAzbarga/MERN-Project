@@ -1,5 +1,4 @@
 import React, { useReducer, useEffect } from "react";
-
 import { validate } from "../../util/validators";
 import "./Input.css";
 
@@ -58,6 +57,7 @@ const Input = (props) => {
         onChange={changeHandler}
         value={inputState.value}
         onBlur={touchHandler}
+        onClick ={props.onClick}
       />
     ) : (
       <textarea
@@ -66,6 +66,9 @@ const Input = (props) => {
         onChange={changeHandler}
         value={inputState.value}
         onBlur={touchHandler}
+        placeholder={props.placeholder}
+        onClick ={props.onClick}
+       
       />
     );
 
