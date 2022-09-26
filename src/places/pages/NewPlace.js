@@ -117,7 +117,7 @@ const NewPlace = () => {
           />
         )}
         <Button type="submit" disabled={!formState.isValid}>
-          ADD PLACE
+          POST
         </Button>
       </form>
     </React.Fragment>
