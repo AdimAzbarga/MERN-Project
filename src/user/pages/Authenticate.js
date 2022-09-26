@@ -13,6 +13,7 @@ import {
 } from "../../shared/util/validators";
 import { useForm } from "../../shared/hooks/form-hook";
 import { LoginContext } from "../../shared/context/LoginContext";
+import UploadImage from "../../shared/componants/FormElements/UploadImage";
 import "./Authenticate.css";
 
 const Authenticate = () => {
@@ -37,6 +38,7 @@ const Authenticate = () => {
       setFormData(
         {
           name: undefined,
+          image: undefined,
         },
         formState.inputs.email.isValid && formState.inputs.password.isValid
       );
@@ -46,6 +48,10 @@ const Authenticate = () => {
           ...formState.inputs,
           name: {
             value: "",
+            isValid: false,
+          },
+          image: {
+            value: null,
             isValid: false,
           },
         },
@@ -71,24 +77,22 @@ const Authenticate = () => {
             "Content-Type": "application/json",
           }
         );
-        auth.Login(responseData.user.id);
+        auth.Login(responseData.user.id, responseData.user.name);
       } catch (err) {}
     } else {
       try {
+        const formData = new FormData(); //browser api
+        formData.append("email", formState.inputs.email.value);
+        formData.append("password", formState.inputs.password.value);
+        formData.append("name", formState.inputs.name.value);
+        formData.append("image", formState.inputs.image.value);
         const responseData = await sendRequest(
           "http://localhost:5000/api/users/signup",
           "POST",
-          JSON.stringify({
-            name: formState.inputs.name.value,
-            email: formState.inputs.email.value,
-            password: formState.inputs.password.value,
-          }),
-          {
-            "Content-Type": "application/json",
-          }
+          formData
         );
 
-        auth.Login(responseData.user.id);
+        auth.Login(responseData.user.id, responseData.user.name);
       } catch (err) {}
     }
   };
@@ -129,9 +133,17 @@ const Authenticate = () => {
             type="password"
             label="Password"
             validators={[VALIDATOR_MINLENGTH(6)]}
-            errorText="Please enter a valid password, at least 5 characters."
+            errorText="Please enter a valid password, at least 6 characters."
             onInput={inputHandler}
           />
+          {!isLoginMode && (
+            <UploadImage
+              center
+              id="image"
+              onInput={inputHandler}
+              errorText="Please provide an image. "
+            />
+          )}
           <Button type="submit" disabled={!formState.isValid}>
             {isLoginMode ? "Login" : "Signup"}
           </Button>

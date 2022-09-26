@@ -1,8 +1,7 @@
 import React, { useContext } from "react";
 
-
 import Button from "../FormElements/Button";
-import { LoginContext } from "../../context/LoginContext"
+import { LoginContext } from "../../context/LoginContext";
 import { NavLink } from "react-router-dom";
 import "./NavLinks.css";
 
@@ -33,7 +32,12 @@ const NavLinks = (props) => {
       )}
       {auth.isLoggedin && (
         <li>
-          <Button onClick = {auth.Logout}>LOGOUT</Button>
+          <Button onClick={auth.Logout}>LOGOUT</Button>
+        </li>
+      )}
+      {auth.isLoggedin && (
+        <li>
+          <p>Welcome, {auth.name}</p>
         </li>
       )}
     </ul>

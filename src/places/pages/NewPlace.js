@@ -12,13 +12,14 @@ import LoadingSpinner from "../../shared/componants/UIElements/LoadingSpinner";
 import ErrorModal from "../../shared/componants/UIElements/ErrorModal";
 import { LoginContext } from "../../shared/context/LoginContext";
 import { useHistory } from "react-router-dom";
+import UploadImage from "../../shared/componants/FormElements/UploadImage";
 import "./Pform.css";
 
 const NewPlace = () => {
   const auth = useContext(LoginContext);
   const { isLoading, isError, sendRequest, deleteError } = useHttpClient();
   const [isClicked, setIsClick] = useState(false);
-  const [isDesClicked , setIsClicked]=useState(false);
+  const [isDesClicked, setIsClicked] = useState(false);
   const [formState, InputHandler] = useForm(
     {
       title: {
@@ -27,6 +28,14 @@ const NewPlace = () => {
       },
       description: {
         value: "",
+        isValid: false,
+      },
+      address: {
+        value: "",
+        isValid: false,
+      },
+      image: {
+        value: null,
         isValid: false,
       },
     },
@@ -38,19 +47,13 @@ const NewPlace = () => {
   const placeSubminHandler = async (event) => {
     event.preventDefault();
     try {
-      await sendRequest(
-        "http://localhost:5000/api/places",
-        "POST",
-        JSON.stringify({
-          title: formState.inputs.title.value,
-          description: formState.inputs.description.value,
-          address: formState.inputs.address.value,
-          creator: auth.userId,
-        }),
-        {
-          "Content-Type": "application/json",
-        }
-      );
+      const formData = new FormData();
+      formData.append("title", formState.inputs.title.value);
+      formData.append("description", formState.inputs.description.value);
+      formData.append("address", formState.inputs.address.value);
+      formData.append("image", formState.inputs.image.value);
+      formData.append("creator", auth.userId);
+      await sendRequest("http://localhost:5000/api/places", "POST", formData);
       history.push(`/${auth.userId}/places`);
     } catch (err) {}
   };
@@ -61,7 +64,6 @@ const NewPlace = () => {
   const DesClickeHandler = () => {
     setIsClicked(true);
   };
-
 
   return (
     <React.Fragment>
@@ -84,7 +86,7 @@ const NewPlace = () => {
         {isClicked && (
           <Input
             id="description"
-            onClick ={DesClickeHandler}
+            onClick={DesClickeHandler}
             onInput={InputHandler}
             element="textarea"
             //label="Description"
@@ -106,6 +108,14 @@ const NewPlace = () => {
           validators={[VALIDATOR_REQUIRE]}
           errorText="Please ENTER a valid address."
         />
+        {isClicked && (
+          <UploadImage
+            center
+            id="image"
+            onInput={InputHandler}
+            errorText="Please provide an image"
+          />
+        )}
         <Button type="submit" disabled={!formState.isValid}>
           ADD PLACE
         </Button>

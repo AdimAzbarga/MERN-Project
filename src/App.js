@@ -19,15 +19,18 @@ import { LoginContext } from "./shared/context/LoginContext";
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userId, setUserId] = useState(false);
+  const [name, setName] = useState();
 
-  const login = useCallback((uid) => {
+  const login = useCallback((uid, name) => {
     setIsLoggedIn(true);
     setUserId(uid);
+    setName(name);
   }, []);
 
   const logout = useCallback(() => {
     setIsLoggedIn(false);
     setUserId(null);
+    setName(null);
   }, []);
 
   let routes;
@@ -74,6 +77,7 @@ const App = () => {
         userId: userId,
         Login: login,
         Logout: logout,
+        name: name,
       }}
     >
       <Router>

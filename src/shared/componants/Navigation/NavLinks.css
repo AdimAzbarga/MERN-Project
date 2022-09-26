@@ -1,3 +1,11 @@
+.main-header p {
+  color: #fff;
+  font-family: "McLaren", cursive;
+  font-weight: 200;
+  font-size: large;
+  
+}
+
 .nav-links {
     list-style: none;
     margin: 0;
